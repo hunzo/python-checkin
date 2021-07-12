@@ -1,32 +1,28 @@
 import csv
-import model as m
 from datetime import datetime
+from pprint import pprint
 
 
 class CSV_SERVICES:
-    def get_csv(self, res: m.UserReg):
-        filename = f'./csv/access_bld_{res.Bld}_floor_{res.Floor}.csv'
+    def logging_csv(self, fname: str, lname: str, phoneNum: int, bld: str, floor: int, isCheckin: bool):
+        filename = f'./outfile/access_bld_{bld}_floor_{floor}.csv'
         f = open(filename, 'a+', encoding='utf-8-sig')
-        w = csv.DictWriter(f, delimiter=',', lineterminator="\n", quoting=csv.QUOTE_NONNUMERIC, fieldnames=[
-                            'fname', 'lname', 'building', 'floor', 'isCheckin', 'timestamp'])
+        w = csv.DictWriter(f, delimiter=',', lineterminator="\n", quoting=csv.QUOTE_NONNUMERIC, fieldnames=['fname', 'lname', 'phoneNum','building', 'floor', 'isCheckin', 'timestamp'])
+        # w = csv.writer(f, delimiter=',', lineterminator="\n", quoting=csv.QUOTE_NONNUMERIC)
         # w.writeheader()
-        data = [
-            res.Fname,
-            res.Lname,
-            res.Bld,
-            res.Floor,
-            res.isCheckin,
-            datetime.now()
-        ]
-        d = {
-            "fname": res.Fname,
-            "lname": res.Lname,
-            "building": res.Bld,
-            "floor": res.Floor,
-            "isCheckin": res.isCheckin,
+        data = {
+            "fname": fname,
+            "lname": lname,
+            "building": bld,
+            "floor": floor,
+            "isCheckin": 'checkin' if isCheckin else 'checkout',
+            "phoneNum": phoneNum,
             "timestamp": datetime.now()
         }
-        print(d, data)
+        print(csv)
+				
+        print('Data Logging...')
+        pprint(data)
 
-        w.writerow(d)
+        w.writerow(data)
         f.close()

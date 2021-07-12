@@ -1,33 +1,88 @@
 from fastapi import FastAPI
+from datetime import datetime
 import model as m
-import csv_services as csv
-import redis 
-
-c = csv.CSV_SERVICES()
+import csv_services 
+import redis
+import json
+import os
 
 api = FastAPI()
 
+REDIS_SERVER = os.getenv('REDIS_SERVER')
 
-@api.post('/register')
-def register(req: m.UserReg):
-    '''
-    register session 
-    '''
-    print(req)
-    c.get_csv(req)
-    return req
+r = redis.Redis(host=REDIS_SERVER, port=6379, charset="utf-8", db=0)
+c = csv_services.CSV_SERVICES()
 
-@api.post('/session')
-def check_session(sess: m.ChkPhoneNum):
-    '''
-    ckeck session in redis 
-    '''
-    return sess
 
-@api.delete('/logout')
-def disconnect_session(sess: m.ChkPhoneNum):
+@api.post('/checkin')
+def checkin(req: m.CheckIn):
     '''
-    set session expire 
+    register redis sessions
     '''
-    return sess
+    if r.get(req.PhoneNum):
+        ret = dict(json.loads(
+            r.get(req.PhoneNum).decode('utf-8').replace("'", '"')))
 
+        print('Check in Redis Session and Set CheckOut')
+
+        if ret['Bld'] != req.Bld:
+            c.logging_csv(ret['Fname'], ret['Lname'], ret['PhoneNum'], ret['Bld'], ret['Floor'], False)
+            r.delete(req.PhoneNum)
+
+            c.logging_csv(ret['Fname'], ret['Lname'], ret['PhoneNum'], req.Bld, ret['Floor'], True)
+            r.set(req.PhoneNum, str(req.dict()), ex=300)
+
+            return 're-checkin-switch-building logging'
+        
+        if ret['Bld'] == req.Bld:
+            return 're-checkin-same-building nolog'
+        
+    r.set(req.PhoneNum, str(req.dict()), ex=300)
+    c.logging_csv(req.Fname, req.Lname, req.PhoneNum, req.Bld, req.Floor, True)
+
+    return 'new-checkin'
+
+
+@api.post('/ischeckin')
+def is_checkin(p: m.IsCheckin):
+    '''
+    check phone in redis sessions
+    '''
+    return True if r.get(p.PhoneNum) else False
+
+
+@api.get('/info')
+def get_info(phone: int):
+    if r.get(phone):
+        ret = r.get(phone).decode('utf-8').replace("'", '"')
+        return {
+            "status": "inSession",
+            "data": json.loads(ret)
+        }
+    return {
+        "status": "notInSession"
+    }
+
+
+@api.delete('/checkout')
+def checkout(sess: m.CheckOut):
+    '''
+    delete redis session
+    '''
+    if r.get(sess.PhoneNum):
+        ret = dict(json.loads(
+            r.get(sess.PhoneNum).decode('utf-8').replace("'", '"')))
+        print(ret)
+        c.logging_csv(ret['Fname'], ret['Lname'],
+                    ret['PhoneNum'], ret['Bld'], ret['Floor'], False)
+        r.delete(sess.PhoneNum)
+        return {
+            "status": "success",
+            "data": ret
+        }
+
+    # r.delete(sess.PhoneNum)
+    return {
+        "status": "failed",
+        "data": "notInSession"
+    }

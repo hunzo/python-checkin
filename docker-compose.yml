@@ -1,0 +1,27 @@
+version: '3.7'
+services:
+    session_services:
+        image: redis
+        environment: 
+            - TZ=Asia/Bangkok
+        ports:
+            - 6379:6379
+        networks:
+            - ms-net
+    api:
+        build: ./api
+        environment: 
+            - REDIS_SERVER=session_services
+            - TZ=Asia/Bangkok
+        volumes:
+            - ${PWD}/csv_files:/app/outfile
+            # - /etc/localtime:/etc/localtime:ro
+            # - /etc/timezone:/etc/timezone:ro
+        ports: 
+            - 8080:8080
+        networks:
+            - ms-net
+
+networks:
+    ms-net:
+        external: true

@@ -1,15 +1,15 @@
 from pydantic import BaseModel
 
-class UserReg(BaseModel):
+class CheckIn(BaseModel):
     Fname: str
     Lname: str
     Bld: str
     Floor: int
     PhoneNum: int
-    isCheckin: bool
 
-class ChkPhoneNum(BaseModel):
+class CheckOut(BaseModel):
     PhoneNum: int
-    Bld: str
-    Floor: int
+
+class IsCheckin(BaseModel):
+    PhoneNum: int
 
