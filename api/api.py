@@ -1,8 +1,7 @@
 from fastapi import FastAPI
-from datetime import datetime
 from dotenv import load_dotenv
 import model as m
-import csv_services 
+import csv_services
 import redis
 import json
 import os
@@ -36,10 +35,19 @@ def checkin(req: m.CheckIn):
             r.set(req.PhoneNum, str(req.dict()), ex=300)
 
             return 're-checkin-switch-building logging'
-        
+
         if ret['Bld'] == req.Bld:
+            if ret['Floor'] != req.Floor:
+                c.logging_csv(ret['Fname'], ret['Lname'], ret['PhoneNum'], ret['Bld'], ret['Floor'], False)
+                r.delete(req.PhoneNum)
+
+                c.logging_csv(ret['Fname'], ret['Lname'], ret['PhoneNum'], req['Bld'], req.Floor, True)
+                r.set(req.PhoneNum, str(req.dict()), ex=300)
+
+                return 're-checkin-switch-Floor logging'
+
             return 're-checkin-same-building nolog'
-        
+
     r.set(req.PhoneNum, str(req.dict()), ex=300)
     c.logging_csv(req.Fname, req.Lname, req.PhoneNum, req.Bld, req.Floor, True)
 
@@ -76,8 +84,7 @@ def checkout(sess: m.CheckOut):
         ret = dict(json.loads(
             r.get(sess.PhoneNum).decode('utf-8').replace("'", '"')))
         print(ret)
-        c.logging_csv(ret['Fname'], ret['Lname'],
-                    ret['PhoneNum'], ret['Bld'], ret['Floor'], False)
+        c.logging_csv(ret['Fname'], ret['Lname'], ret['PhoneNum'], ret['Bld'], ret['Floor'], False)
         r.delete(sess.PhoneNum)
         return {
             "status": "success",
