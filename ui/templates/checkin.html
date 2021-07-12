@@ -1,0 +1,43 @@
+{% extends 'layout.html' %}
+{% block checkin %}
+<p class="h3">
+  Check In
+</p>
+
+<div class="card">
+  <div class="card-body">
+    <form method="POST">
+      {{ form.csrf_token() }}
+
+      <div class="form-group">
+        {{ form.firstname.label}}
+        {{ form.firstname(class="form-control")}}
+      </div>
+
+      <div class="from-group">
+        {{ form.lastname.label}}
+        {{ form.lastname(class="form-control")}}
+      </div>
+
+      <div class="form-group" style="margin-top: 10px;">
+        {{ form.phonenumber.label}}
+        {{ form.phonenumber(class="form-control")}}
+      </div>
+
+      <div class="form-group">
+        {{ form.building.label}}
+        {{ form.building(class="form-control")}}
+      </div>
+
+      <div class="form-group">
+        {{ form.floor.label}}
+        {{ form.floor(class="form-control")}}
+      </div>
+      <div class="form-group" style="margin-top: 1rem">
+        {{ form.submit(class="btn btn-info btn-block") }}
+        <a href="/" class="btn btn-primary btn-block" style="margin-top: 1rem;" role="button">หน้าหลัก</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

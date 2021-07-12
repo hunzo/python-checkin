@@ -1,10 +1,13 @@
 from fastapi import FastAPI
 from datetime import datetime
+from dotenv import load_dotenv
 import model as m
 import csv_services 
 import redis
 import json
 import os
+
+load_dotenv()
 
 api = FastAPI()
 
