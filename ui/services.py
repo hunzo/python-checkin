@@ -1,9 +1,13 @@
 import requests
 import json
+import os
+
+API_SERVER = os.getenv('API_SERVER')
+
 
 class SERVICES:
     def checkin(self, fname: str, lname: str, phone: int, building: str, floor: int):
-        url = "http://localhost:8080/checkin"
+        url = f"{API_SERVER}/checkin"
         body = {
             "Fname": fname,
             "Lname": lname,
@@ -18,7 +22,7 @@ class SERVICES:
         return ret.json()
     
     def getinfo(self, phone: int):
-        url = f"http://localhost:8080/info?phone={phone}"
+        url = f"{API_SERVER}/info?phone={phone}"
         headers = {
             "content-type": "application/json"
         }
@@ -26,7 +30,7 @@ class SERVICES:
         return ret.json()
     
     def checkout(self, phone: int):
-        url = f"http://localhost:8080/checkout"
+        url = f"{API_SERVER}/checkout"
         headers = {
             "content-type": "application/json"
         }
