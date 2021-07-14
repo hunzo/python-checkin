@@ -19,6 +19,7 @@ class SERVICES:
             "content-type": "application/json"
         }
         ret = requests.post(url=url, data=json.dumps(body), headers=headers)
+        # print(ret.text)
         return ret.json()
     
     def getinfo(self, phone: int):

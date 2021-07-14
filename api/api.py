@@ -31,7 +31,8 @@ def checkin(req: m.CheckIn):
             c.logging_csv(ret['Fname'], ret['Lname'], ret['PhoneNum'], ret['Bld'], ret['Floor'], False)
             r.delete(req.PhoneNum)
 
-            c.logging_csv(ret['Fname'], ret['Lname'], ret['PhoneNum'], req.Bld, ret['Floor'], True)
+            # c.logging_csv(ret[, ret['Lname'], ret['PhoneNum'], req.Bld, ret['Floor'], True)
+            c.logging_csv(req.Fname, req.Lname, req.PhoneNum, req.Bld, req.Floor, True)
             r.set(req.PhoneNum, str(req.dict()), ex=300)
 
             return 're-checkin-switch-building logging'
@@ -41,7 +42,7 @@ def checkin(req: m.CheckIn):
                 c.logging_csv(ret['Fname'], ret['Lname'], ret['PhoneNum'], ret['Bld'], ret['Floor'], False)
                 r.delete(req.PhoneNum)
 
-                c.logging_csv(ret['Fname'], ret['Lname'], ret['PhoneNum'], req['Bld'], req.Floor, True)
+                c.logging_csv(req.Fname, req.Lname, req.PhoneNum, req.Bld, req.Floor, True)
                 r.set(req.PhoneNum, str(req.dict()), ex=300)
 
                 return 're-checkin-switch-Floor logging'

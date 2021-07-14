@@ -26,3 +26,10 @@ class CSV_SERVICES:
 
         w.writerow(data)
         f.close()
+
+        f_name = './outfile/all_access_list.csv'
+        fa = open(f_name, 'a+', encoding='utf-8-sig')
+        wa = csv.DictWriter(fa, delimiter=',', lineterminator="\n", quoting=csv.QUOTE_NONNUMERIC, fieldnames=['fname', 'lname', 'phoneNum','building', 'floor', 'isCheckin', 'timestamp'])
+        wa.writerow(data)
+        fa.close()
+
