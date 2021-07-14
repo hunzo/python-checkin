@@ -3,6 +3,7 @@ FROM python:3.9-alpine
 WORKDIR /app
 
 RUN apk add --no-cache build-base 
+RUN python -m pip install --upgrade pip
 
 ENV TZ Asia/Bangkok
 

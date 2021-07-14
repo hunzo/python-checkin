@@ -4,6 +4,7 @@ WORKDIR /app
 
 RUN apk add --no-cache build-base 
 RUN apk add --no-cache tzdata
+RUN python -m pip install --upgrade pip
 
 ENV TZ Asia/Bangkok
 
