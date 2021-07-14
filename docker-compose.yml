@@ -24,7 +24,7 @@ services:
     app:
         build: ./ui
         ports: 
-            - 8080:8000
+            - 8080:5000
         environment: 
             - API_SERVER=http://api:8080
         networks:
